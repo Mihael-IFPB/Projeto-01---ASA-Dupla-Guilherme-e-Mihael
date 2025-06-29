@@ -76,13 +76,19 @@ devops/
 
 ## 6. Execução do Projeto
 
-### 🔧 1. Subir o ambiente virtualizado
+### 🔽 1. Clonar o repositório
+
+```bash
+git clone https://github.com/Mihael-IFPB/Projeto-01---ASA-Dupla-Guilherme-e-Mihael.git
+```
+
+### 🔧 2. Subir o ambiente virtualizado
 
 ```bash
 vagrant up
 ```
 
-### 📦 2. Aplicar configuração com Ansible
+### 📦 3. Aplicar configuração com Ansible
 
 ```bash
 ansible-playbook -i ansible/hosts ansible/playbook.yml
@@ -94,7 +100,7 @@ Ou para rodar em uma VM específica:
 ansible-playbook -i ansible/hosts ansible/playbook.yml --limit app
 ```
 
-### ✅ 3. Rodar testes automáticos
+### ✅ 4. Rodar testes automáticos
 
 ```bash
 chmod +x testes.sh
