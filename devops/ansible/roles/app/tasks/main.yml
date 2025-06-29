@@ -1,0 +1,46 @@
+---
+- name: Atualizar cache do apt
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Instalar Apache2
+  apt:
+    name: apache2
+    state: present
+
+- name: Garantir que o Apache2 esteja ativo e habilitado
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Instalar o autofs
+  apt:
+    name: autofs
+    state: present
+
+- name: Configurar montagem automática do NFS em /var/nfs
+  lineinfile:
+    path: /etc/auto.master
+    line: "/var/nfs /etc/auto.nfs"
+
+- name: Criar o arquivo de mapeamento /etc/auto.nfs
+  copy:
+    dest: /etc/auto.nfs
+    content: |
+      dados -rw,sync arq:/dados/nfs
+
+- name: Reiniciar o autofs
+  service:
+    name: autofs
+    state: restarted
+
+- name: Substituir a página padrão do Apache pelo index.html do projeto
+  copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+

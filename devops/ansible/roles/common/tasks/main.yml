@@ -1,0 +1,70 @@
+- name: Atualizar o sistema
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Instalar chrony
+  apt:
+    name: chrony
+    state: present
+
+- name: Ajustar timezone para America/Recife
+  timezone:
+    name: America/Recife
+
+- name: Criar grupo ifpb
+  group:
+    name: ifpb
+    state: present
+
+- name: Criar usuário mihael no grupo ifpb
+  user:
+    name: mihael
+    groups: ifpb
+    state: present
+    create_home: yes
+    shell: /bin/bash
+
+- name: Criar usuário guilherme no grupo ifpb
+  user:
+    name: guilherme
+    groups: ifpb
+    state: present
+    create_home: yes
+    shell: /bin/bash
+
+- name: Configurar SSH para só permitir autenticação por chave pública e restringir acesso
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      AllowGroups vagrant ifpb
+  notify: Reiniciar SSH
+
+- name: Instalar cliente NFS
+  apt:
+    name: nfs-common
+    state: present
+
+- name: Permitir sudo para grupo ifpb sem senha
+  copy:
+    dest: /etc/sudoers.d/ifpb
+    content: "%ifpb ALL=(ALL) NOPASSWD: ALL\n"
+    mode: '0440'
+
+- name: Gerar chave SSH para usuário mihael
+  user:
+    name: mihael
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- name: Gerar chave SSH para usuário guilherme
+  user:
+    name: guilherme
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+

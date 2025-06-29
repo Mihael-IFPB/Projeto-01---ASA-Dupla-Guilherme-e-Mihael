@@ -1,0 +1,48 @@
+---
+- name: Instalar firefox-esr
+  apt:
+    name: firefox-esr
+    state: present
+    update_cache: yes
+
+- name: Instalar xauth
+  apt:
+    name: xauth
+    state: present
+
+- name: Criar diretório .ssh para guilherme
+  file:
+    path: /home/guilherme/.ssh
+    state: directory
+    owner: guilherme
+    group: ifpb
+    mode: '0700'
+
+- name: Configurar SSH com ForwardX11 para guilherme
+  copy:
+    dest: /home/guilherme/.ssh/config
+    content: |
+      Host *
+          ForwardX11 yes
+    owner: guilherme
+    group: ifpb
+    mode: '0644'
+
+- name: Criar diretório .ssh para mihael
+  file:
+    path: /home/mihael/.ssh
+    state: directory
+    owner: mihael
+    group: ifpb
+    mode: '0700'
+
+- name: Configurar SSH com ForwardX11 para mihael
+  copy:
+    dest: /home/mihael/.ssh/config
+    content: |
+      Host *
+          ForwardX11 yes
+    owner: mihael
+    group: ifpb
+    mode: '0644'
+

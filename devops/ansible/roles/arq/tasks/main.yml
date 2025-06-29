@@ -1,0 +1,64 @@
+---
+- name: Instalar servidor NFS
+  apt:
+    name: nfs-kernel-server
+    state: present
+    update_cache: yes
+
+- name: Criar diretórios de compartilhamento
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0777'
+  loop:
+    - /dados/publico
+    - /dados/privado
+
+- name: Configurar /etc/exports
+  copy:
+    dest: /etc/exports
+    content: |
+      /dados/publico *(rw,sync,no_root_squash)
+      /dados/privado 192.168.56.0/24(rw,sync,no_root_squash)
+
+- name: Ativar e iniciar o serviço NFS
+  systemd:
+    name: nfs-kernel-server
+    enabled: yes
+    state: restarted
+
+- name: Instalar o servidor DHCP
+  apt:
+    name: isc-dhcp-server
+    state: present
+    update_cache: yes
+
+- name: Configurar arquivo dhcpd.conf
+  copy:
+    dest: /etc/dhcp/dhcpd.conf
+    content: |
+      option domain-name "ifpb.edu.br";
+      option domain-name-servers 8.8.8.8, 8.8.4.4;
+      default-lease-time 600;
+      max-lease-time 7200;
+
+      subnet 192.168.56.0 netmask 255.255.255.0 {
+        range 192.168.56.100 192.168.56.150;
+        option routers 192.168.56.138;
+        option broadcast-address 192.168.56.255;
+      }
+
+- name: Configurar interface DHCP em /etc/default/isc-dhcp-server
+  lineinfile:
+    path: /etc/default/isc-dhcp-server
+    regexp: '^INTERFACESv4='
+    line: 'INTERFACESv4="eth1"'
+
+- name: Reiniciar o serviço isc-dhcp-server
+  systemd:
+    name: isc-dhcp-server
+    state: restarted
+    enabled: yes
+

@@ -1,0 +1,24 @@
+# dhcpd.conf para o servidor DHCP na VM arq
+
+option domain-name "mihael.guilherme.devops";
+option domain-name-servers 1.1.1.1, 8.8.8.8;
+
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 192.168.56.0 netmask 255.255.255.0 {
+  range 192.168.56.50 192.168.56.100;
+  option routers 192.168.56.112;       # Gateway padrão: IP da VM arq
+  option domain-name-servers 1.1.1.1, 8.8.8.8;
+}
+
+host db {
+  hardware ethernet 08:00:27:80:d1:55;  # MAC da VM db
+  fixed-address 192.168.56.126;
+}
+
+host app {
+  hardware ethernet 08:00:27:35:44:5c;  # MAC da VM app
+  fixed-address 192.168.56.138;
+}
+

@@ -1,0 +1,40 @@
+---
+- name: Atualizar cache do apt
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Instalar MariaDB
+  apt:
+    name: mariadb-server
+    state: present
+
+- name: Garantir que o MariaDB esteja ativo e habilitado
+  systemd:
+    name: mariadb
+    enabled: yes
+    state: started
+
+- name: Instalar o autofs
+  apt:
+    name: autofs
+    state: present
+
+- name: Configurar montagem automática do NFS em /var/nfs
+  copy:
+    dest: /etc/auto.master.d/nfs.autofs
+    content: |
+      /var/nfs  /etc/auto.nfs
+
+- name: Criar o arquivo de mapeamento /etc/auto.nfs
+  copy:
+    dest: /etc/auto.nfs
+    content: |
+      dados   -rw,soft,intr,nosuid 192.168.56.112:/dados/nfs
+
+- name: Reiniciar o autofs
+  systemd:
+    name: autofs
+    state: restarted
+    enabled: yes
+

@@ -1,0 +1,25 @@
+- hosts: all
+  become: yes
+  roles:
+    - common
+
+- hosts: arq
+  become: yes
+  roles:
+    - arq
+
+- hosts: db
+  become: yes
+  roles:
+    - db
+
+- hosts: app
+  become: yes
+  roles:
+    - app
+
+- hosts: cli
+  become: yes
+  roles:
+    - cli
+
